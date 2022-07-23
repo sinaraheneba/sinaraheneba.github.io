@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" class="page page-cv">
+<head>
+	<meta charset="utf-8">
+	<title>湾曲トス—草村安隆 ｜ W.K. Toss—Andrew Thoreson | 湾曲推送—草村安隆</title>
+  <meta name="description" lang="en" content=""/>
+  <meta name="description" lang="jp" content=""/>
+  <meta name="description" lang="zh" content=""/>
+	<!--<link rel="icon" type="image/png" href="...favicon.png">-->
+  <style>
+    
+  </style>
+</head>
+
+<body>
+  <script>
+    let config = {
+      pages: ['bio', 'cv'],
+      langs: ['en', 'jp', 'zh'],
+      titles: {
+        jp: '湾曲トス—草村安隆',
+        en:　'W.K. Toss—Andrew Thoreson',
+        zh: '湾曲推送—草村安隆'
+      },
+      current: {
+        pages: 'bio',
+        langs: 'en',
+      }
+    }
+            
+    function toggle(type, target){
+      config.current[type] = target;
+      document.title = config.titles[config.current.langs];
+      hideClasses = config[type].filter((cl) => cl==target ? [null] : cl);
+      hideClasses.forEach(cl =>
+        Array.from(document.querySelectorAll('main .' + cl)).forEach( el =>
+          el.classList.contains(config.current[type]) ? null : el.style.display = 'none'));
+      Array.from(document.querySelectorAll('main .' + target)).forEach( el =>
+        el.classList.contains(config.current.pages) && el.classList.contains(config.current.langs) ?
+          el.style.display = 'block' : null);
+    }
+   
+    window.onload = function() { 
+      toggle('langs','en')
+      toggle('pages','bio')
+      
+      // unhide?
+      // set title by language
+    }; 
+  </script> 
+
+	<header>
+    <p>under construction</p>
+		<ul class="nav" role="navigation">
+			<li ><a href="#" onclick="toggle('pages', 'bio')">about</a></li>
+      <li ><a href="#" onclick="toggle('pages', 'cv')">cv</a></li>
+      <li ><a href="#" onclick="toggle('pages', 'contact')">contact</a></li>
+      <li class="en zh"><a href="#" onclick="toggle('langs', 'jp')" >jp</a></li>
+      <li class="jp en"><a href="#" onclick="toggle('langs', 'zh')" >zh</a></li>
+      <li class="jp zh"><a href="#" onclick="toggle('langs', 'en')" >en</a></li>
+		</ul>
+   </header>
+
+	<main>  
+    <article class="en bio">
+      English about
+    </article>
+    <article class="en cv">
+      English CV
+    </article>
+    <article class="en contact">
+      777alt@gmail.com
+    </article>
+    
+    <article class="jp bio">
+      日本語コンテンツ
+    </article>
+    <article class="jp cv">
+      日本語履歴
+    </article>
+    <article class="jp contact">
+      777alt@gmail.com
+    </article>
+        
+    <article class="zh bio">
+      中文内容
+    </article>
+    <article class="zh cv">
+      中文履歴
+    </article>
+    <article class="zh contact">
+      777alt@gmail.com
+    </article>
+    
+	</main>
+
+</body>
+</html>
