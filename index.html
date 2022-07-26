@@ -8,6 +8,97 @@
   <meta name="description" lang="zh" content=""/>
 	<!--<link rel="icon" type="image/png" href="...favicon.png">-->
   <style>
+    div {
+      display: inline;
+    }
+            
+    label span{
+      display: inline-block;
+      text-align: right;
+    }
+    
+    main {
+      width: 70%;
+      padding-top: 45px;
+      max-width: 1024px;
+      margin: auto;
+    }
+    
+    ul {
+      padding-left: 1em;
+      list-style-type: '－'; 
+    }
+    
+    ul.nav {
+      list-style-type: none; 
+      width: 95%;
+      margin: 0;
+      padding-left: 5%;
+      overflow: clip;
+      background-color: #333;
+      position: fixed;
+      max-height: 45px;
+      top: 0;
+      left: 0;
+    }
+    
+    article ul li {
+      margin-left: 1em;
+    }
+    
+    .nav li {
+      float: left;  
+    }
+    .nav li.en, .nav li.jp, .nav li.zh{
+      margin-right: 20px;
+      float: right;
+    }
+    
+    #filter-box {
+      display: inline-block;
+      padding-top: 45px;
+      padding-bottom: 16px;
+      list-style-type: none;
+      float: right;
+      background-color: #add8e6;
+      width: 250px;
+    }
+    
+    #filter-box li {
+      background-color: #add8e6;
+      padding-right: 20px;
+      margin: 0;
+    }
+
+    input {
+      display: inline-block;
+      
+    }
+    
+    .filter-menu {
+      background-color: #add8e6; <!--wk ice-->
+      color: white;
+      border: none;
+      padding: 12px 16px;
+      text-align: center;
+      display: inline-block;
+      float: right;
+    }
+    
+    .nav li a {
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 12px 16px;
+      text-decoration: none;
+    }
+    
+    .nav li a:hover {
+      background-color: #111;
+    }
+    
+    </style>
+    
     
   </style>
 </head>
@@ -15,7 +106,7 @@
 <body>
   <script>
     let config = {
-      pages: ['bio', 'cv'],
+      pages: ['bio', 'cv', 'contact'],
       langs: ['en', 'jp', 'zh'],
       titles: {
         jp: '湾曲トス—草村安隆',
@@ -26,72 +117,393 @@
         pages: 'bio',
         langs: 'en',
       }
-    }
+    };
+    let filters;
             
     function toggle(type, target){
+      document.querySelector('#filter-box').style.display = 'none';
       config.current[type] = target;
       document.title = config.titles[config.current.langs];
-      hideClasses = config[type].filter((cl) => cl==target ? [null] : cl);
+      if(target === 'bio') {
+        Array.from(document.querySelectorAll('article li')).forEach(function(li){
+           if(!li.classList.contains('force')){ li.style.display = 'none' }
+        })
+      }
+      hideClasses = config[type].filter((cl) => cl!==target);
       hideClasses.forEach(cl =>
-        Array.from(document.querySelectorAll('main .' + cl)).forEach( el =>
+        Array.from(document.querySelectorAll('.' + cl)).forEach( el =>
           el.classList.contains(config.current[type]) ? null : el.style.display = 'none'));
-      Array.from(document.querySelectorAll('main .' + target)).forEach( el =>
-        el.classList.contains(config.current.pages) && el.classList.contains(config.current.langs) ?
-          el.style.display = 'block' : null);
+      Array.from(document.querySelectorAll('.' + target)).forEach( el =>
+        el.classList.contains(config.current.pages) || el.classList.contains(config.current.langs) ?
+          el.style.display = 'inline-block' : null);
     }
-   
-    window.onload = function() { 
+    
+    function updateFilters(style, query){
+      document.querySelectorAll(query).forEach(function(el){
+        el.style.display = style
+      })
+    }
+    
+    window.onload = function(){ 
       toggle('langs','en')
       toggle('pages','bio')
       
-      // unhide?
-      // set title by language
+      document.querySelector('#nav-menu').style.display = 'block';
+      document.querySelectorAll('.filter-menu').forEach(function(el){      
+        el.style.display = 'block'; 
+        el.addEventListener('click', function(){
+          filterbox = document.querySelector('#filter-box')
+          if(filterbox.style.display === 'none'){
+            filterbox.style.display = 'block'
+          } else {
+            filterbox.style.display = 'none'
+          }
+        })
+      })
+      
+      filters = document.querySelectorAll('.filter')
+      Array.from(filters).forEach(filter =>
+        filter.addEventListener('change', function(){
+          currentShow = document.querySelectorAll('.filter:checked')
+          lines = document.querySelectorAll('article li')
+          Array.from(lines).forEach(function(line){
+            if(!line.classList.contains('force')){ line.style.display = 'none' }
+            Array.from(currentShow).forEach(function(show){
+              if(line.classList.contains(show.id)){
+                line.style.display = 'list-item'
+              }
+            }
+            )
+          })
+        })
+      )
     }; 
   </script> 
 
 	<header>
-    <p>under construction</p>
-		<ul class="nav" role="navigation">
+		<ul class="nav" id="nav-menu" role="navigation" style="display:none">
+      <li><a href=# style="color: #ffa500 !important">under construction 作成中</a></li>
 			<li ><a href="#" onclick="toggle('pages', 'bio')">about</a></li>
       <li ><a href="#" onclick="toggle('pages', 'cv')">cv</a></li>
       <li ><a href="#" onclick="toggle('pages', 'contact')">contact</a></li>
-      <li class="en zh"><a href="#" onclick="toggle('langs', 'jp')" >jp</a></li>
-      <li class="jp en"><a href="#" onclick="toggle('langs', 'zh')" >zh</a></li>
-      <li class="jp zh"><a href="#" onclick="toggle('langs', 'en')" >en</a></li>
+      <li class="en zh"><a href="#" onclick="toggle('langs', 'jp')" >日本語</a></li>
+      <li class="jp en"><a href="#" onclick="toggle('langs', 'zh')" >中文</a></li>
+      <li class="jp zh"><a href="#" onclick="toggle('langs', 'en')" >english</a></li>
 		</ul>
+    
+    <ul id="filter-box" style="display:none">
+      <li><label><input class="filter" type="checkbox" id="lang">
+        <span class="en">translation/editing</span>
+        <span class="jp">翻訳・編集</span>
+        <span class="zh">翻訳・編集</span></label></li>
+      <li><label><input class="filter" type="checkbox" id="pm">
+        <span class="en">project management</span>
+        <span class="jp">プロジェクトマネジメント</span>
+        <span class="zh">計畫管理</span></label></li>
+      <li><label><input class="filter" type="checkbox" id="ba">
+        <span class="en">business analysis/kaizen</span>
+        <span class="jp">BA・業務改善</span>
+        <span class="zh">baph</span></label></li>
+      <li><label><input class="filter" type="checkbox" id="dev">
+        <span class="en">development</span>
+        <span class="jp">開発・自動化</span>
+        <span class="zh">devph</span></label></li>
+      <li><label><input class="filter" type="checkbox" id="qa">
+        <span class="en">software qa</span>
+        <span class="jp">ソフトQA</span>
+        <span class="zh">qaph</span></label></li>
+      <li><label><input class="filter" type="checkbox" id="da">
+        <span class="en">data analysis</span>
+        <span class="jp">データ分析</span>
+        <span class="zh">daph</span></label></li>
+      <li><label><input class="filter" type="checkbox" id="law">
+        <span class="en">legal</span>
+        <span class="jp">法律</span>
+        <span class="zh">法律</span></label></li>
+    </ul>
    </header>
 
-	<main>  
-    <article class="en bio">
-      English about
-    </article>
-    <article class="en cv">
-      English CV
-    </article>
-    <article class="en contact">
-      777alt@gmail.com
-    </article>
-    
-    <article class="jp bio">
-      日本語コンテンツ
-    </article>
-    <article class="jp cv">
-      日本語履歴
-    </article>
-    <article class="jp contact">
-      777alt@gmail.com
-    </article>
+	<main> 
+    <div class="en">
+      <article class="contact">
+        lucianthoreson@gmail.com
+      </article>
+      
+      <article class="bio">
+        English about
+      </article>
+      <article class="cv">
+          <button type="button" class="filter-menu" style="display:none">
+            view details
+          </button>
+        <h1>Employment</h1>
         
-    <article class="zh bio">
-      中文内容
-    </article>
-    <article class="zh cv">
-      中文履歴
-    </article>
-    <article class="zh contact">
-      777alt@gmail.com
-    </article>
+        <h2 class="employer">Cognizant</h2>
+        <p><div class="worked-years">2020~2022</div>
+        <div class="job-title">Associate Consultant</p>
+        <ul>
+          <li class="force">APAC QA team trainer for FAANG client ML/NLP software project</li>
+          <li class="pm ba lang">Managerial and administrative tasks, office management at client site</li>
+          <li class="ba pm dev qa">Consultation on new tool development, prototyping</li>
+          <li class="force">Creation and maintenance of training materials</li>
+          <li class="qa dev pm">Provided training for development environment / productivity tools (IDEs, version control with Git)</li>
+          <li class="qa ba">Onboarding training for client procedures and internal tools</li>
+        </ul>
+        
+        <h2 class="employer">A.P. Møller – Mærsk A/S</h2>
+        <p><div class="worked-years">2019~2020</div>
+        <div class="job-title">Continuous Improvements Automation Specialist</div></p> 
+        <ul>
+          <li class="force">Business needs/requirements analysis; identification of kaizen opportunities</li>
+          <li class="ba qa lang">Coordination with offshore developers, verification of deliverables</li>
+          <li class="ba dev qa">Powershell/VBA: Desktop and MS Office automations, business tool development</li>
+          <li class="ba pm dev">Gemba inspection, on-site training and process improvement</li>
+          <li class="qa pm ba">Requisition of resources for team, training on automations and process improvement tools</li>
+        </ul>
+        
+        <h2 class="employer">Familiar Link, Inc.</h2>
+        <p><div class="worked-years">2017~2019</div>
+        <div class="job-title">Quality Management and Business Improvements</div></p>
+        <ul>
+          <li class="force">Development, implementation and training of various software tools for desktop, web, cloud</li>
+          <li class="force">Establishment and administration of Revenue Management program, boosting revenues upwards of 20%</li>
+          <li class="lang">Translation and editing of customer-facing materials</li>
+          <li class="ba pm law">Research and opinion/proposal writing; new project bootstrapping and leadership</li>
+          <li class="ba pm dev da">Javascript/CSS/HTML: Creation of web tools and automations; AJAX web apps with GAS</li>
+          <li class="dev ba lang">Google Apps Script: Automation of data retrieval, editing and storage; process improvements</li>
+          <li class="da">SQL: Retrieval of large volumes of data for visualization and reuse</li>
+          <li class="da">R/ggplot: Reproducible processing and visualization of large datasets</li>
+        </ul>
+        
+        <h2 class="employer">Chingcheng Attorney at Law</h2>
+        <p><div class="worked-years">2018~2021</div>
+        <div class="job-title">Translation and Social Media Management (<i>freelance</i>)</div></p>
+        <p><div class="worked-years">2015~2016</div>
+        <div class="job-title">Legal Intern (<i>part time</i>)</div></p>
+        <ul>
+          <li class="law">Legal and patent research (Electronics and hardware; Pharmaceuticals)</li>
+          <li class="law lang">Contractual review, translation, editing, analysis, and composition</li>
+          <li class="ba pm">Coordination between domestic and foreign associates/clientele</li>
+          <li class="lang">Translation of client communications and other documents</li>
+        </ul>
+        
+        <h2 class="employer">Hong Shun Event Services Co., Ltd.</h2>
+        <p><div class="worked-years">2014~2015</div>
+        <div class="job-title">Expo Services and Information (<i>part time</i>)</div></p>
+        <ul>
+          <li class="lang pm">Provided informational and assistive service for major trade shows such as COMPUTEX, Taipei Cycle, and TIMTOS in English, Mandarin, and Japanese</li>
+          <li class="lang">VIP services and escorts, interpretation, dispute resolution</li>
+        </ul>
+        
+      <h1>Publications</h1>
+        <ul>
+          <li class="force"><div class="worked-years">2021</div> <a href="https://www.e-elgar.com/shop/gbp/the-commercialization-of-pharmaceutical-patents-in-china-9781789908220.html"><i>The Commercialization of Pharmaceutical Patents in China</i></a>, Translation and Editing</li>
+          <li class="force"><div class="worked-years">2015</div> <a href="http://www.law.ntu.edu.tw/index.php/publications">National Taiwan University Law Review</a>, Assistant Editor</li>
+          <li class="force"><div class="worked-years">2014</div> <a href="https://www.ntu.law.acwh.tw/publication.php">Asian Journal of WTO and International Health Law and Policy</a>, Assistant Editorial Member</li>
+        </ul>
+        
+      <h1>Certifications</h1>
+      <ul>
+        <li class="force">Japanese Language Proficiency Test, N1 <div class="worked-years">2019</div></li>
+        <li class="force">Test of Chinese as a Foreign Language, L4 <div class="worked-years">2012</div></li>
+      </ul>
+      
+      <h1>Education</h1>
+        <ul>
+          <li class="force">LL.B, <div class="worked-years">Class of 2017</div>, National Taiwan University College of Law, Legal Science Division</li>
+          <li class="force"><div class="worked-years">2011~2013</div> National Taiwan Normal University, Mandarin Training Center</li>
+          <li class="force"><div class="worked-years">2010~2011</div> J.F. Oberlin University, Reconnaissance Japan Program</li>
+        </ul>
+      </article>
+    </div>
     
+    <div class="jp">
+      <article class="contact">
+        lucianthoreson@gmail.com
+      </article>
+      <article class="bio">
+        日本語コンテンツ
+      </article>
+      <article class="cv">
+          <button type="button" class="filter-menu" style="display:none">  
+          詳しくみる 
+          </button>
+        <!-- Under Translation
+        <h1>履歴</h1>
+        
+        <h2 class="employer">コグニザントジャパン</h2>
+        <p><div class="worked-years">2020~2022</div>
+        <div class="job-title">コンサル</p>
+        <ul>
+          <li class="force">APAC QA team trainer for FAANG client ML/NLP software project</li>
+          <li class="pm ba lang">Managerial and administrative tasks, office management at client site</li>
+          <li class="ba pm dev qa">Consultation on new tool development, prototyping</li>
+          <li class="force">Creation and maintenance of training materials</li>
+          <li class="qa dev pm">Provided training for development environment / productivity tools (IDEs, version control with Git)</li>
+          <li class="qa ba">Onboarding training for client procedures and internal tools</li>
+        </ul>
+        
+        <h2 class="employer">A.P. モラー・マースク</h2>
+        <p><div class="worked-years">2019~2020</div>
+        <div class="job-title">継続的改善・自動化専門家</div></p> 
+        <ul>
+          <li class="force">Business needs/requirements analysis; identification of kaizen opportunities</li>
+          <li class="ba qa lang">Coordination with offshore developers, verification of deliverables</li>
+          <li class="ba dev qa">Powershell/VBA: Desktop and MS Office automations, business tool development</li>
+          <li class="ba pm dev">Gemba inspection, on-site training and process improvement</li>
+          <li class="qa pm ba">Requisition of resources for team, training on automations and process improvement tools</li>
+        </ul>
+        
+        <h2 class="employer">株式会社ファミリアリンク</h2>
+        <p><div class="worked-years">2017~2019</div>
+        <div class="job-title">品質管理・業務改善</div></p>
+        <ul>
+          <li class="force">Development, implementation and training of various software tools for desktop, web, cloud</li>
+          <li class="force">Establishment and administration of Revenue Management program, boosting revenues upwards of 20%</li>
+          <li class="lang">Translation and editing of customer-facing materials</li>
+          <li class="ba pm law">Research and opinion/proposal writing; new project bootstrapping and leadership</li>
+          <li class="ba pm dev da">Javascript/CSS/HTML: Creation of web tools and automations; AJAX web apps with GAS</li>
+          <li class="dev ba lang">Google Apps Script: Automation of data retrieval, editing and storage; process improvements</li>
+          <li class="da">SQL: Retrieval of large volumes of data for visualization and reuse</li>
+          <li class="da">R/ggplot: Reproducible processing and visualization of large datasets</li>
+        </ul>
+        
+        <h2 class="employer">慶辰法律事務所</h2>
+        <p><div class="worked-years">2018~2021</div>
+        <div class="job-title">翻訳・SNSマネジャー (<i>フリーランス</i>)</div></p>
+        <p><div class="worked-years">2015~2016</div>
+        <div class="job-title">法務インターン (<i>アルバイト</i>)</div></p>
+        <ul>
+          <li class="law">Legal and patent research (Electronics and hardware; Pharmaceuticals)</li>
+          <li class="law lang">Contractual review, translation, editing, analysis, and composition</li>
+          <li class="ba pm">Coordination between domestic and foreign associates/clientele</li>
+          <li class="lang">Translation of client communications and other documents</li>
+        </ul>
+        
+        <h2 class="employer">Hong Shun Event Services Co., Ltd.</h2>
+        <p><div class="worked-years">2014~2015</div>
+        <div class="job-title">展覧会サービス (<i>アルバイト</i>)</div></p>
+        <ul>
+          <li class="lang pm">Provided informational and assistive service for major trade shows such as COMPUTEX, Taipei Cycle, and TIMTOS in English, Mandarin, and Japanese</li>
+          <li class="lang">VIP services and escorts, interpretation, dispute resolution</li>
+        </ul>
+       
+      <h1>出版</h1>
+        <ul>
+          <li class="force"><div class="worked-years">2021</div> <a href="https://www.e-elgar.com/shop/gbp/the-commercialization-of-pharmaceutical-patents-in-china-9781789908220.html"><i>The Commercialization of Pharmaceutical Patents in China</i></a>　【論醫藥專利的產業化：中國專利法專題研究】, 英訳・編集</li>
+          <li class="force"><div class="worked-years">2015</div> <a href="http://www.law.ntu.edu.tw/index.php/publications">National Taiwan University Law Review</a>, 編集補佐</li>
+          <li class="force"><div class="worked-years">2014</div> <a href="https://www.ntu.law.acwh.tw/publication.php">Asian Journal of WTO and International Health Law and Policy</a>, 編集補佐</li>
+        </ul>
+        
+      <h1>資格</h1>
+      <ul>
+        <li class="force">日本語能力試験N1級 <div class="worked-years">2019</div></li>
+        <li class="force">Test of Chinese as a Foreign Language, L4 <div class="worked-years">???201?</div></li>
+      </ul>
+      
+      <h1>Education</h1>
+        <ul>
+          <li class="force">LL.B, <div class="worked-years">Class of 2017</div>, 国立台湾大学法律系法学組</li>
+          <li class="force"><div class="worked-years">2011~2013</div> 国立台湾師範大学国語中心</li>
+          <li class="force"><div class="worked-years">2010~2011</div> 桜美林大学 RJ 留学プログラム</li>
+        </ul>
+      </article>
+      -->
+    </div>
+
+    <div class="zh">
+      <article class="contact">
+        lucianthoreson@gmail.com
+      </article>
+      <article class="bio">
+        中文内容
+      </article>
+      <article class="cv">
+        <button type="button" class="filter-menu" style="display:none">  
+        閱讀詳情
+        </button>
+        <!-- Under Translation
+        <h1>Employment</h1>
+        
+        <h2 class="employer">Cognizant</h2>
+        <p><div class="worked-years">2020~2022</div>
+        <div class="job-title">Associate Consultant</p>
+        <ul>
+          <li class="force">APAC QA team trainer for FAANG client ML/NLP software project</li>
+          <li class="pm ba lang">Managerial and administrative tasks, office management at client site</li>
+          <li class="ba pm dev qa">Consultation on new tool development, prototyping</li>
+          <li class="force">Creation and maintenance of training materials</li>
+          <li class="qa dev pm">Provided training for development environment / productivity tools (IDEs, version control with Git)</li>
+          <li class="qa ba">Onboarding training for client procedures and internal tools</li>
+        </ul>
+        
+        <h2 class="employer">A.P. Møller – Mærsk A/S</h2>
+        <p><div class="worked-years">2019~2020</div>
+        <div class="job-title">Continuous Improvements Automation Specialist</div></p> 
+        <ul>
+          <li class="force">Business needs/requirements analysis; identification of kaizen opportunities</li>
+          <li class="ba qa lang">Coordination with offshore developers, verification of deliverables</li>
+          <li class="ba dev qa">Powershell/VBA: Desktop and MS Office automations, business tool development</li>
+          <li class="ba pm dev">Gemba inspection, on-site training and process improvement</li>
+          <li class="qa pm ba">Requisition of resources for team, training on automations and process improvement tools</li>
+        </ul>
+        
+        <h2 class="employer">Familiar Link, Inc.</h2>
+        <p><div class="worked-years">2017~2019</div>
+        <div class="job-title">Quality Management and Business Improvements</div></p>
+        <ul>
+          <li class="force">Development, implementation and training of various software tools for desktop, web, cloud</li>
+          <li class="force">Establishment and administration of Revenue Management program, boosting revenues upwards of 20%</li>
+          <li class="lang">Translation and editing of customer-facing materials</li>
+          <li class="ba pm law">Research and opinion/proposal writing; new project bootstrapping and leadership</li>
+          <li class="ba pm dev da">Javascript/CSS/HTML: Creation of web tools and automations; AJAX web apps with GAS</li>
+          <li class="dev ba lang">Google Apps Script: Automation of data retrieval, editing and storage; process improvements</li>
+          <li class="da">SQL: Retrieval of large volumes of data for visualization and reuse</li>
+          <li class="da">R/ggplot: Reproducible processing and visualization of large datasets</li>
+        </ul>
+        
+        <h2 class="employer">Chingcheng Attorney at Law</h2>
+        <p><div class="worked-years">2018~2021</div>
+        <div class="job-title">Translation and Social Media Management (<i>freelance</i>)</div></p>
+        <p><div class="worked-years">2015~2016</div>
+        <div class="job-title">2015~2016 Legal Intern (<i>part time</i>)</div></p>
+        <ul>
+          <li class="law">Legal and patent research (Electronics and hardware; Pharmaceuticals)</li>
+          <li class="law lang">Contractual review, translation, editing, analysis, and composition</li>
+          <li class="ba pm">Coordination between domestic and foreign associates/clientele</li>
+          <li class="lang">Translation of client communications and other documents</li>
+        </ul>
+        
+        <h2 class="employer">Hong Shun Event Services Co., Ltd.</h2>
+        <p><div class="worked-years">2014~2015</div>
+        <div class="job-title">Expo Services and Information (<i>part time</i>)</div></p>
+        <ul>
+          <li class="lang pm">Provided informational and assistive service for major trade shows such as COMPUTEX, Taipei Cycle, and TIMTOS in English, Mandarin, and Japanese</li>
+          <li class="lang">VIP services and escorts, interpretation, dispute resolution</li>
+        </ul>
+        
+      <h1>Publications</h1>
+        <ul>
+          <li class="force">2021 <a href="https://www.e-elgar.com/shop/gbp/the-commercialization-of-pharmaceutical-patents-in-china-9781789908220.html"><i>The Commercialization of Pharmaceutical Patents in China</i></a>, Translation and Editing</li>
+          <li class="force">2015 <a href="http://www.law.ntu.edu.tw/index.php/publications">National Taiwan University Law Review</a>, Assistant Editor</li>
+          <li class="force">2014 <a href="https://www.ntu.law.acwh.tw/publication.php">Asian Journal of WTO and International Health Law and Policy</a>, Assistant Editorial Member</li>
+        </ul>
+        
+      <h1>Certifications</h1>
+      <ul>
+        <li class="force">Japanese Language Proficiency Test, N1 <div class="worked-years">???201?</div></li>
+        <li class="force">Test of Chinese as a Foreign Language, L4 <div class="worked-years">???201?</div></li>
+      </ul>
+      
+      <h1>Education</h1>
+        <ul>
+          <li class="force">LL.B, <div class="worked-years">Class of 2017</div>, National Taiwan University College of Law, Legal Science Division</li>
+          <li class="force"><div class="worked-years">2011~2013</div> National Taiwan Normal University, Mandarin Training Center</li>
+          <li class="force"><div class="worked-years">2010~2011</div> J.F. Oberlin University, Reconnaissance Japan Program</li>
+        </ul>
+      </article>
+      -->
+    </div>    
 	</main>
 
 </body>
